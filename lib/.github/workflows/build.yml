@@ -1,0 +1,30 @@
+name: Build Flutter APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Siapkan folder Android
+        run: |
+          flutter create temp_proj --platforms=android
+          cp -rn temp_proj/android .
+          rm -rf temp_proj
+      - name: Unduh dependensi & Build APK
+        run: |
+          flutter pub get
+          flutter build apk --release
+      - name: Upload File APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: aplikasi-keuangan-target
+          path: build/app/outputs/flutter-apk/app-release.apk
+          
